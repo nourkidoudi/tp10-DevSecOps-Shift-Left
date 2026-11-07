@@ -4,7 +4,6 @@ const { execFile } = require("child_process");
 const sqlite3 = require("sqlite3");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
-const escapeHtml = require("escape-html");
 const config = require("./config");
 
 const app = express();
@@ -32,7 +31,7 @@ app.get("/ping", (req, res) => {
 
 // Échappement HTML de l'entrée utilisateur.
 app.get("/hello", (req, res) => {
-  res.send("<h1>Bonjour " + escapeHtml(String(req.query.name || "")) + "</h1>");
+  res.json({ message: "Bonjour " + String(req.query.name || "") });
 });
 
 // lodash sera mis à jour dans la partie 4 (prototype pollution).
