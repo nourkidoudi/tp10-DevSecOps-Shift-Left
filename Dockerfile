@@ -1,7 +1,14 @@
-# ⚠️ TP10 : Dockerfile VOLONTAIREMENT mal configuré (à analyser avec trivy config puis corriger).
-FROM node:14
+FROM node:24-alpine AS build
 WORKDIR /app
-COPY . .
-RUN npm install
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY src ./src
+
+FROM node:24-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build --chown=node:node /app /app
+USER node
 EXPOSE 3000
-CMD ["npm", "start"]
+HEALTHCHECK --interval=30s --timeout=3s CMD node -e "fetch('http://localhost:3000/hello').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node", "src/server.js"]
