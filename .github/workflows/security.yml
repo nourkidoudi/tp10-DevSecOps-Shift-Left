@@ -15,7 +15,7 @@ jobs:
     steps:
       # TODO : épingler chaque Action tierce par SHA de commit complet, avec la version en commentaire
       #        ex. uses: actions/checkout@<sha40> # v7.0.0
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@LE_SHA_40 # v7.0.0
         with:
           fetch-depth: 0 # historique complet : Gitleaks analyse tous les commits
       # TODO : lancer Gitleaks (image ghcr.io/gitleaks/gitleaks ou action gitleaks/gitleaks-action)
@@ -23,20 +23,20 @@ jobs:
   sast:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@LE_SHA_40 # v7.0.0
       # TODO : Semgrep (conteneur semgrep/semgrep) avec --config p/javascript --config p/owasp-top-ten
       #        --error pour faire échouer le job, --sarif pour publier dans l'onglet Security
 
   dependencies:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@LE_SHA_40 # v7.0.0
       # TODO : npm ci puis npm audit --audit-level=high
 
   image:
     runs-on: ubuntu-latest
     needs: [secrets, sast, dependencies]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@LE_SHA_40 # v7.0.0
       # TODO : docker build puis Trivy image --severity CRITICAL --exit-code 1 --ignore-unfixed
       # TODO : Trivy config sur le Dockerfile

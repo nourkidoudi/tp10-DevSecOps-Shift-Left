@@ -1,10 +1,10 @@
-// ⚠️ TP10 : application VOLONTAIREMENT vulnérable. Ne jamais l'exposer hors du lab.
-// Chaque bloc marqué [VULN] doit être détecté par un outil puis corrigé.
+// TP10 : version corrigée (SAST)
 const express = require("express");
-const { exec } = require("child_process");
+const { execFile } = require("child_process");
 const sqlite3 = require("sqlite3");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
+const escapeHtml = require("escape-html");
 const config = require("./config");
 
 const app = express();
@@ -16,31 +16,34 @@ db.serialize(() => {
   db.run("INSERT INTO users (name, role) VALUES ('alice', 'admin'), ('bob', 'user')");
 });
 
-// [VULN] Injection SQL : la valeur de l'utilisateur est concaténée dans la requête.
+// Requête paramétrée : l'entrée ne peut plus modifier le SQL.
 app.get("/users", (req, res) => {
-  const sql = "SELECT id, name FROM users WHERE name = '" + req.query.name + "'";
-  db.all(sql, (err, rows) => (err ? res.status(500).send(err.message) : res.json(rows)));
+  db.all("SELECT id, name FROM users WHERE name = ?", [req.query.name], (err, rows) =>
+    err ? res.status(500).send("Erreur") : res.json(rows)
+  );
 });
 
-// [VULN] Injection de commande : l'entrée est passée à un shell.
+// Validation du host + execFile : aucun shell n'interprète l'entrée.
 app.get("/ping", (req, res) => {
-  exec("ping -c 1 " + req.query.host, (err, stdout) => res.type("text").send(stdout || String(err)));
+  const host = String(req.query.host || "");
+  if (!/^[a-zA-Z0-9.-]{1,253}$/.test(host)) return res.status(400).send("host invalide");
+  execFile("ping", ["-c", "1", host], (err, stdout) => res.type("text").send(stdout || "échec"));
 });
 
-// [VULN] XSS réfléchi : l'entrée est renvoyée dans du HTML sans échappement.
+// Échappement HTML de l'entrée utilisateur.
 app.get("/hello", (req, res) => {
-  res.send("<h1>Bonjour " + req.query.name + "</h1>");
+  res.send("<h1>Bonjour " + escapeHtml(String(req.query.name || "")) + "</h1>");
 });
 
-// [VULN] Prototype pollution via une version vulnérable de lodash (merge récursif d'un objet client).
+// lodash sera mis à jour dans la partie 4 (prototype pollution).
 app.post("/settings", (req, res) => {
   const settings = _.merge({}, req.body);
   res.json(settings);
 });
 
-// [VULN] Jeton signé avec un secret codé en dur, sans expiration.
+// Secret depuis l'environnement + expiration du jeton.
 app.post("/login", (req, res) => {
-  const token = jwt.sign({ user: req.body.user, role: "user" }, config.jwt_secret);
+  const token = jwt.sign({ user: req.body.user, role: "user" }, config.jwt_secret, { expiresIn: "1h" });
   res.json({ token });
 });
 
