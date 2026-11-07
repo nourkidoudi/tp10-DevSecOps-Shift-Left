@@ -9,7 +9,7 @@
     "test": "node --test"
   },
   "dependencies": {
-    "express": "4.17.1",
+    "express": "4.22.3",
     "jsonwebtoken": "8.5.1",
     "lodash": "4.17.15",
     "sqlite3": "5.1.7"
