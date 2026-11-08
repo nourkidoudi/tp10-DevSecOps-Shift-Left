@@ -110,7 +110,13 @@ Avec ces deux packs de règles, Semgrep n'a **pas** signalé trois failles pourt
 
 `Findings: 0`, code retour 0.
 
-![Semgrep avant et après](captures/semgrep-before-after.png)
+**Avant :**
+
+![Semgrep avant](captures/semgrep-before.png)
+
+**Après :**
+
+![Semgrep après](captures/semgrep-after.png)
 
 ---
 
