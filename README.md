@@ -110,7 +110,13 @@ Avec ces deux packs de règles, Semgrep n'a **pas** signalé trois failles pourt
 
 `Findings: 0`, code retour 0.
 
-![Semgrep avant et après](captures/semgrep-before-after.png)
+**Avant correction (7 résultats) :**
+
+![Semgrep avant](captures/semgrep-before.png)
+
+**Après correction (0 résultat) :**
+
+![Semgrep après](captures/semgrep-after.png)
 
 ---
 
@@ -217,7 +223,13 @@ Job Jenkins : `vuln-app-security` (Multibranch Pipeline, toutes les branches).
 | `test/failles` (failles réintroduites) | **Rouge** | le stage Semgrep échoue (XSS), Build et Image scan sont sautés |
 | `main` / `test/failles` après correction | **Vert** | les 3 scans, le build et le scan d'image passent |
 
-![Pipeline Jenkins rouge puis vert](captures/jenkins-security.png)
+**Pipeline rouge (failles réintroduites) :**
+
+![Pipeline Jenkins rouge](captures/jenkins-security-rouge.png)
+
+**Pipeline vert (failles corrigées) :**
+
+![Pipeline Jenkins vert](captures/jenkins-security-vert.png)
 
 ---
 
@@ -241,11 +253,13 @@ Job Jenkins : `vuln-app-security` (Multibranch Pipeline, toutes les branches).
 |---|---|
 | `captures/gitleaks.png` | Secrets détectés par Gitleaks |
 | `captures/pre-commit-blocked.png` | Commit refusé par le hook |
-| `captures/semgrep-before-after.png` | Résultats Semgrep avant / après |
+| `captures/semgrep-before.png` | Résultats Semgrep avant correction |
+| `captures/semgrep-after.png` | Résultats Semgrep après correction |
 | `captures/trivy-before-after.png` | Vulnérabilités de l'image avant / après |
 | `captures/dependabot-pr.png` | Pull Request ouverte par Dependabot |
 | `captures/codeql-alerts.png` | Alertes CodeQL |
 | `captures/pr-blocked.png` | PR bloquée par un check obligatoire |
-| `captures/jenkins-security.png` | Pipeline Jenkins rouge puis vert |
+| `captures/jenkins-security-rouge.png` | Pipeline Jenkins rouge (failles réintroduites) |
+| `captures/jenkins-security-vert.png` | Pipeline Jenkins vert (failles corrigées) |
 
 Code corrigé : `src/`, `Dockerfile`, `.dockerignore`, `.gitignore`, `.env.example` · Pipelines : `.github/workflows/security.yml`, `Jenkinsfile` · Configuration : `.github/dependabot.yml`, `.pre-commit-config.yaml`, `.gitleaksignore`.
