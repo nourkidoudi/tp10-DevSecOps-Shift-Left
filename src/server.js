@@ -17,8 +17,9 @@ db.serialize(() => {
 
 // Requête paramétrée : l'entrée ne peut plus modifier le SQL.
 app.get("/users", (req, res) => {
-  const sql = "SELECT id, name FROM users WHERE name = '" + req.query.name + "'";
-  db.all(sql, (err, rows) => (err ? res.status(500).send("Erreur") : res.json(rows)));
+  db.all("SELECT id, name FROM users WHERE name = ?", [req.query.name], (err, rows) =>
+    err ? res.status(500).send("Erreur") : res.json(rows)
+  );
 });
 
 // Validation du host + execFile : aucun shell n'interprète l'entrée.
@@ -30,7 +31,7 @@ app.get("/ping", (req, res) => {
 
 // Échappement HTML de l'entrée utilisateur.
 app.get("/hello", (req, res) => {
-  res.send("<h1>Bonjour " + req.query.name + "</h1>");
+  res.json({ message: "Bonjour " + String(req.query.name || "") });
 });
 
 // lodash sera mis à jour dans la partie 4 (prototype pollution).
